@@ -1,0 +1,771 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>CS-250 Complexity Drill</title><meta name="description" content="O, Omega and Theta practice for CS-250 DSA: array operations, lab quiz solutions, interactive drills."><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: graph-paper study sheet; sticky tab bar; one column of cards; notation colors are semantic everywhere (O = upper/orange, Ω = lower/teal, Θ = tight/violet) */
+:root{
+  --bg:#f4f6fb; --grid:rgba(60,90,170,.07); --card:#ffffff; --ink:#18213b; --muted:#5a6482; --line:#d7dcea; --soft:#eceff7;
+  --O:#c4410c; --Om:#0a7f6a; --Th:#5b3fd0; --hl:#d48806;
+  --good:#2b8a3e; --bad:#c92a2a; --goodbg:#e6f6ea; --badbg:#fdeaea;
+  --Obg:#fdeee6; --Ombg:#e3f5f1; --Thbg:#eee9ff; --hlbg:#fff4dc;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f121b; --grid:rgba(140,160,230,.06); --card:#171b28; --ink:#e5e8f4; --muted:#9aa3c0; --line:#2b3146; --soft:#1e2333;
+  --O:#ff8f57; --Om:#3fcfae; --Th:#a690ff; --hl:#f5b83d;
+  --good:#5bd17a; --bad:#ff7070; --goodbg:#163222; --badbg:#3a1a1d;
+  --Obg:#3a2217; --Ombg:#12302a; --Thbg:#261f45; --hlbg:#3a2e12; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f121b; --grid:rgba(140,160,230,.06); --card:#171b28; --ink:#e5e8f4; --muted:#9aa3c0; --line:#2b3146; --soft:#1e2333;
+  --O:#ff8f57; --Om:#3fcfae; --Th:#a690ff; --hl:#f5b83d;
+  --good:#5bd17a; --bad:#ff7070; --goodbg:#163222; --badbg:#3a1a1d;
+  --Obg:#3a2217; --Ombg:#12302a; --Thbg:#261f45; --hlbg:#3a2e12; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.6 var(--body);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{padding-block:28px 14px}
+.eyebrow{font:600 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font:800 clamp(30px,5vw,46px)/1.05 var(--display);margin:8px 0 10px;text-wrap:balance;letter-spacing:-.01em}
+h1 .o{color:var(--O)} h1 .w{color:var(--Om)} h1 .t{color:var(--Th)}
+.lede{max-width:66ch;color:var(--muted);margin:0}
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+nav.tabs .wrap{display:flex;gap:4px;overflow-x:auto;padding-block:8px}
+nav.tabs button{font:600 14px var(--body);color:var(--muted);background:none;border:1px solid transparent;border-radius:8px;padding:7px 12px;cursor:pointer;white-space:nowrap}
+nav.tabs button[aria-selected="true"]{color:var(--ink);background:var(--card);border-color:var(--line)}
+nav.tabs button:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--Th);outline-offset:2px}
+main{padding-block:22px 60px}
+section.view{display:grid;gap:22px}
+h2{font:700 26px/1.15 var(--display);margin:0;text-wrap:balance}
+h3{font:700 19px/1.2 var(--display);margin:0;text-wrap:balance}
+p{margin:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;display:grid;gap:14px;min-width:0}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+code,.mono{font-family:var(--mono);font-size:.92em}
+pre.code{font:13.5px/1.55 var(--mono);background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin:0;overflow-x:auto;white-space:pre}
+.chip{display:inline-flex;align-items:center;font:600 13px/1 var(--mono);padding:5px 8px;border-radius:6px;border:1px solid;white-space:nowrap}
+.chip.O{color:var(--O);border-color:color-mix(in srgb,var(--O) 40%,transparent);background:var(--Obg)}
+.chip.Om{color:var(--Om);border-color:color-mix(in srgb,var(--Om) 40%,transparent);background:var(--Ombg)}
+.chip.Th{color:var(--Th);border-color:color-mix(in srgb,var(--Th) 40%,transparent);background:var(--Thbg)}
+.chip.none{color:var(--muted);border-color:var(--line);background:var(--soft)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.legend .k{display:grid;gap:4px;padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:var(--card)}
+.legend .k > b{font:700 22px var(--display)}
+.tablebox{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
+thead th{font:600 12px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--soft)}
+tbody tr:last-child td{border-bottom:none}
+td.op{font-weight:600;white-space:nowrap}
+.cellbtn{all:unset;cursor:pointer;display:flex;flex-wrap:wrap;gap:5px;padding:6px;border-radius:8px;border:1px dashed transparent;min-width:150px}
+.cellbtn:hover{border-color:var(--line)}
+.cellbtn.sel{border:1px solid var(--Th);background:var(--Thbg)}
+.cellbtn .q{font:600 13px var(--mono);color:var(--muted);padding:5px 8px;border:1px dashed var(--line);border-radius:6px}
+.cellbtn:focus-visible{outline:2px solid var(--Th)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{font:600 14px var(--body);border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:7px 12px;cursor:pointer}
+.btn:hover{background:var(--soft)}
+.btn.primary{background:var(--Th);border-color:var(--Th);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+.diagram{overflow-x:auto;background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:10px}
+.diagram svg{display:block;margin:0 auto;max-width:none;height:auto}
+.cap{font-size:14px}
+.callout{border-left:3px solid var(--Th);background:var(--Thbg);padding:12px 14px;border-radius:0 8px 8px 0}
+.callout.warn{border-color:var(--hl);background:var(--hlbg)}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.two>*{min-width:0}
+/* svg */
+svg text{font-family:var(--mono)}
+.nd circle,.nd rect{fill:var(--card);stroke:var(--ink);stroke-width:1.6}
+.nd text{fill:var(--ink);font-size:13px;font-weight:600;text-anchor:middle;dominant-baseline:central}
+.nd.new circle,.nd.new rect{fill:var(--Thbg);stroke:var(--Th);stroke-width:2.2}
+.nd.bad circle,.nd.bad rect{fill:var(--badbg);stroke:var(--bad);stroke-width:2.4}
+.nd.piv circle,.nd.piv rect{fill:var(--hlbg);stroke:var(--hl);stroke-width:2.2}
+.nd.vis circle,.nd.vis rect{fill:var(--Ombg);stroke:var(--Om);stroke-width:2.2}
+.nd.dim{opacity:.22}
+.nd.rm rect{fill:var(--badbg);stroke:var(--bad);stroke-dasharray:4 3}
+.nd.spare rect{fill:none;stroke:var(--muted);stroke-dasharray:4 3}
+.edge{stroke:var(--muted);stroke-width:1.7;fill:none}
+.edge.dim{opacity:.22}
+.edge.dashed{stroke:var(--Th);stroke-dasharray:5 4;stroke-width:2}
+.edge.hot{stroke:var(--O);stroke-width:2.4}
+.edge.ok{stroke:var(--Om);stroke-width:2.4}
+.edge.mv{stroke:var(--O);stroke-width:1.6}
+.lbl{fill:var(--muted);font-size:11px}
+.lbl.big{font-size:12.5px;font-weight:600}
+.lbl.bad{fill:var(--bad);font-weight:700}
+.lbl.th{fill:var(--Th);font-weight:700}
+.lbl.o{fill:var(--O);font-weight:700}
+.lbl.om{fill:var(--Om);font-weight:700}
+.mk-muted{fill:var(--muted)} .mk-O{fill:var(--O)} .mk-Om{fill:var(--Om)} .mk-Th{fill:var(--Th)}
+.dot{fill:var(--Th)} .dot2{fill:var(--O)}
+.axis{stroke:var(--muted);stroke-width:1}
+.gridl{stroke:var(--line);stroke-width:1}
+.curve-f{stroke:var(--ink);stroke-width:2.6;fill:none}
+.curve-o{stroke:var(--O);stroke-width:2.2;fill:none}
+.curve-om{stroke:var(--Om);stroke-width:2.2;fill:none}
+/* stepper */
+.stepper{display:grid;gap:10px}
+.stepper .ctrl{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.stepper .count{font:500 12px var(--mono);color:var(--muted)}
+/* quiz cards */
+.qhead{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:baseline}
+.qnum{font:800 15px var(--display);color:var(--muted)}
+.tag{font:600 11px/1 var(--mono);text-transform:uppercase;letter-spacing:.06em;padding:4px 7px;border-radius:5px}
+.tag.wrong{color:var(--bad);background:var(--badbg)}
+.tag.right{color:var(--good);background:var(--goodbg)}
+.tag.topic{color:var(--muted);background:var(--soft)}
+ol.opts{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+ol.opts li{display:flex;gap:10px;padding:7px 10px;border:1px solid var(--line);border-radius:8px}
+ol.opts li .l{font:600 13px var(--mono);color:var(--muted)}
+ol.opts li.ans{border-color:var(--good);background:var(--goodbg)}
+ol.opts li.picked{border-color:var(--bad);background:var(--badbg)}
+ol.opts li .why{margin-left:auto;font:600 11px var(--mono);text-transform:uppercase;white-space:nowrap}
+.cx{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;align-items:center;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--soft)}
+.cx .h{font:600 12px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+details.q > summary{cursor:pointer;list-style:none}
+details.q > summary::-webkit-details-marker{display:none}
+details.q[open] > summary .chev{transform:rotate(90deg)}
+.chev{display:inline-block;transition:transform .15s;color:var(--muted)}
+/* practice */
+.stmt{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:8px}
+.stmt .s{font:600 14px var(--mono);flex:1 1 140px}
+.stmt .tf{display:flex;gap:6px}
+.stmt.ok{border-color:var(--good);background:var(--goodbg)}
+.stmt.no{border-color:var(--bad);background:var(--badbg)}
+.stmt .fb{flex-basis:100%;font-size:13px;color:var(--muted)}
+.selrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.selrow label{display:grid;gap:4px;font:600 12px var(--mono);text-transform:uppercase;letter-spacing:.04em}
+.selrow label.O{color:var(--O)} .selrow label.Om{color:var(--Om)} .selrow label.Th{color:var(--Th)}
+select{font:500 14px var(--mono);padding:7px 8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+select.ok{border-color:var(--good);background:var(--goodbg)} select.no{border-color:var(--bad);background:var(--badbg)}
+.score{display:flex;gap:16px;flex-wrap:wrap;align-items:center;font:600 14px var(--mono)}
+.score b{font:800 26px var(--display)}
+input[type=range]{accent-color:var(--Th);width:100%}
+input[type=text]{font:500 14px var(--mono);padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);flex:1 1 220px;min-width:0}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{font:600 13px var(--mono);border:none;background:var(--card);color:var(--muted);padding:7px 12px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--Th);color:#fff}
+.verdict{display:grid;gap:6px;font-size:14px}
+.verdict div{padding:8px 10px;border-radius:8px;border:1px solid var(--line)}
+.ladder{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font:600 14px var(--mono)}
+.ladder span.lt{color:var(--muted)}
+section.view,.card,.stepper,details.q>div,#lqCards{grid-template-columns:minmax(0,1fr)}
+ul.tight{margin:0;padding-left:20px;display:grid;gap:4px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<header class="top wrap">
+  <div class="eyebrow">CS-250 · Midterm Thu 5 Nov 2026 · Lecture 07 Run Time Complexity</div>
+  <h1><span class="o">O</span>, <span class="w">Ω</span> and <span class="t">Θ</span>, worked out on paper</h1>
+  <p class="lede">Full solutions for Quiz 02 (array operations) and Lab Quiz 4–6, with every answer drawn out and graded by upper bound, lower bound and tight bound. Then drill until the notation feels automatic.</p>
+</header>
+
+<nav class="tabs" aria-label="Sections"><div class="wrap" role="tablist">
+  <button role="tab" data-view="arrays" aria-selected="true">Quiz 02 · Arrays</button>
+  <button role="tab" data-view="labquiz" aria-selected="false">Lab Quiz 4–6</button>
+  <button role="tab" data-view="notation" aria-selected="false">O vs Ω vs Θ</button>
+  <button role="tab" data-view="practice" aria-selected="false">Practice</button>
+</div></nav>
+
+<main class="wrap">
+
+<!-- ============ ARRAYS ============ -->
+<section class="view" id="v-arrays">
+  <div class="legend">
+    <div class="k"><span class="eyebrow">Upper bound</span><b style="color:var(--O)">O(g)</b><span class="small muted">Never grows faster than c·g(n). Read it as the <b>worst case</b>.</span></div>
+    <div class="k"><span class="eyebrow">Lower bound</span><b style="color:var(--Om)">Ω(g)</b><span class="small muted">Never grows slower than c·g(n). Read it as the <b>best case</b>.</span></div>
+    <div class="k"><span class="eyebrow">Tight bound</span><b style="color:var(--Th)">Θ(g)</b><span class="small muted">Both at once. Only exists when best and worst grow the same way.</span></div>
+  </div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between">
+      <div style="display:grid;gap:4px">
+        <h2>Quiz 02 · Array of n elements, spare capacity</h2>
+        <p class="muted small">Tap any cell to see the array before and after, with every element move drawn.</p>
+      </div>
+      <div class="seg" role="group" aria-label="Answer visibility">
+        <button id="arrShow" aria-pressed="true">Show answers</button>
+        <button id="arrHide" aria-pressed="false">Quiz me</button>
+      </div>
+    </div>
+    <div class="tablebox"><table id="arrTable">
+      <thead><tr><th>Operation</th><th>Front / 1st (index 0)</th><th>Back / nth (index n−1)</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+    <div class="callout small"><b>Why O = Ω = Θ in every cell:</b> the position is fixed (front or back), so the number of steps is one exact formula of n, such as n+1 or 1. The same formula is both the best and the worst case, so the upper and lower bounds meet and Θ exists. The pattern to remember: <b>work at the front of an array costs Θ(n) because everything shifts; work at the back costs Θ(1)</b>, except Access, Replace, Next and Previous, which are Θ(1) everywhere.</div>
+  </div>
+
+  <div class="card" id="arrDetail"></div>
+
+  <div class="card">
+    <h3>Where O, Ω and Θ split apart: insert at any index k</h3>
+    <p class="muted">The quiz fixed the position. On the midterm, if the position is <i>any</i> index k, the cost depends on the input. Drag k and count the shifts: <span class="mono">n − k</span>.</p>
+    <div class="row"><label for="kSlider" class="mono small" style="min-width:60px">k = <b id="kVal">2</b></label><input id="kSlider" type="range" min="0" max="6" value="2" style="flex:1 1 200px"></div>
+    <div class="diagram" id="kDiagram"></div>
+    <div class="two">
+      <div class="verdict" id="kVerdict"></div>
+      <div class="cx">
+        <span class="h">Best</span><div class="chips"><span class="chip Om">Ω(1)</span><span class="small muted">k = n, append, 0 shifts</span></div>
+        <span class="h">Worst</span><div class="chips"><span class="chip O">O(n)</span><span class="small muted">k = 0, n shifts</span></div>
+        <span class="h">Tight</span><div class="chips"><span class="chip none">no single Θ</span><span class="small muted">Ω(1) ≠ O(n)</span></div>
+      </div>
+    </div>
+    <div class="tablebox"><table>
+      <thead><tr><th>Operation on an array</th><th>Best (Ω)</th><th>Worst (O)</th><th>Θ over all inputs</th></tr></thead>
+      <tbody>
+        <tr><td class="op">Insert at index k</td><td><span class="chip Om">Ω(1)</span></td><td><span class="chip O">O(n)</span></td><td><span class="chip none">none</span> <span class="small muted">Θ(n−k) for a given k</span></td></tr>
+        <tr><td class="op">Remove at index k</td><td><span class="chip Om">Ω(1)</span></td><td><span class="chip O">O(n)</span></td><td><span class="chip none">none</span> <span class="small muted">Θ(n−1−k) shifts</span></td></tr>
+        <tr><td class="op">Search by value (unsorted)</td><td><span class="chip Om">Ω(1)</span></td><td><span class="chip O">O(n)</span></td><td><span class="chip none">none</span> <span class="small muted">worst case is Θ(n)</span></td></tr>
+        <tr><td class="op">Print every element</td><td><span class="chip Om">Ω(n)</span></td><td><span class="chip O">O(n)</span></td><td><span class="chip Th">Θ(n)</span></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<!-- ============ LAB QUIZ ============ -->
+<section class="view" id="v-labquiz" hidden>
+  <div class="card">
+    <div style="display:grid;gap:4px">
+      <h2>Lab Quiz 4–6 · all 15 questions</h2>
+      <p class="muted small">You scored 6/15. Every question below has the correct option, a diagram you can step through, and the cost of the operation in O, Ω and Θ. Tap a row to jump to it.</p>
+    </div>
+    <div class="tablebox"><table id="lqTable">
+      <thead><tr><th>#</th><th>Topic</th><th>Correct answer</th><th>You</th><th>Operation</th><th>O</th><th>Ω</th><th>Θ</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+  </div>
+  <div id="lqCards" style="display:grid;gap:16px"></div>
+
+  <div class="card" id="sandbox">
+    <h3>AVL sandbox: try your own insert order</h3>
+    <p class="muted small">Type keys separated by commas or spaces. Each step shows the balance factor (left height − right height) over every node; red means |BF| = 2 and a rotation is coming.</p>
+    <div class="row"><input id="sbIn" type="text" value="50, 30, 70, 20, 40, 60, 80, 10, 5" aria-label="Keys to insert"><button class="btn primary" id="sbRun">Run</button></div>
+    <div id="sbOut"></div>
+  </div>
+</section>
+
+<!-- ============ NOTATION ============ -->
+<section class="view" id="v-notation" hidden>
+  <div class="card">
+    <h2>The three definitions (from Lecture 07, slide 36)</h2>
+    <div class="two">
+      <div style="display:grid;gap:10px">
+        <p><span class="chip O">f(n) = O(g(n))</span> there exist c and n₀ with <b>f(n) ≤ c·g(n)</b> for all n ≥ n₀. c·g(n) is an <b>upper bound</b>.</p>
+        <p><span class="chip Om">f(n) = Ω(g(n))</span> there exist c and n₀ with <b>f(n) ≥ c·g(n)</b> for all n ≥ n₀. c·g(n) is a <b>lower bound</b>.</p>
+        <p><span class="chip Th">f(n) = Θ(g(n))</span> there exist c₁, c₂ with <b>c₂·g(n) ≤ f(n) ≤ c₁·g(n)</b> for all n ≥ n₀. A tight bound.</p>
+      </div>
+      <div class="callout"><b>How the course uses them on code:</b> work out the step count for the <b>worst</b> input and give its O; work out the <b>best</b> input and give its Ω. If both land on the same g(n), the algorithm is Θ(g(n)) for every input. If they differ (linear search: Ω(1), O(n)) there is no single Θ, although you can still say “the worst case is Θ(n)”.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>See the bound: f(n) = 3n² + 2n + 33</h3>
+    <p class="muted small">This is Algorithm 1 from slide 31. Pick g(n) and move the constants. A bound holds when the colored curve stays on the correct side of f(n) from some n₀ onward.</p>
+    <div class="row">
+      <span class="mono small">g(n) =</span>
+      <div class="seg" role="group" aria-label="Choose g(n)" id="gSeg">
+        <button data-g="1" aria-pressed="false">n</button>
+        <button data-g="2" aria-pressed="true">n²</button>
+        <button data-g="3" aria-pressed="false">n³</button>
+      </div>
+    </div>
+    <div class="two">
+      <label class="mono small" style="display:grid;gap:4px;color:var(--O)" for="cUp">upper c₁ = <b id="cUpV">4</b><input id="cUp" type="range" min="0.5" max="10" step="0.5" value="4"></label>
+      <label class="mono small" style="display:grid;gap:4px;color:var(--Om)" for="cLo">lower c₂ = <b id="cLoV">2</b><input id="cLo" type="range" min="0.5" max="10" step="0.5" value="2"></label>
+    </div>
+    <div class="diagram" id="plot"></div>
+    <div class="verdict" id="plotVerdict"></div>
+  </div>
+
+  <div class="card">
+    <h3>Rules that answer 90% of code questions</h3>
+    <div class="two">
+      <ul class="tight">
+        <li><b>Drop constants:</b> 5n → Θ(n). Quiz Q12’s inner loop runs 5 times, so it is a constant.</li>
+        <li><b>Keep the leading term:</b> 3n² + 2n + 33 → Θ(n²).</li>
+        <li><b>Loops one after another add:</b> n + n = 2n → Θ(n) (Quiz Q9).</li>
+        <li><b>Nested loops multiply:</b> n · n → Θ(n²); n · 5 → Θ(n).</li>
+        <li><b>Halving or doubling the counter:</b> Θ(log n).</li>
+        <li><b>Early return / break on found:</b> best and worst split, so give Ω and O separately.</li>
+      </ul>
+      <div style="display:grid;gap:10px">
+        <span class="eyebrow">Growth order (slide 44)</span>
+        <div class="ladder"><span>1</span><span class="lt">&lt;</span><span>log n</span><span class="lt">&lt;</span><span>n</span><span class="lt">&lt;</span><span>n log n</span><span class="lt">&lt;</span><span>n²</span><span class="lt">&lt;</span><span>n³</span><span class="lt">&lt;</span><span>2ⁿ</span></div>
+        <div class="callout warn small"><b>Loose but true:</b> 5n + 2 ∈ O(n²) is a correct statement (slide 43), just not tight. When a question asks for “the” complexity, give the tightest bound. When it asks “which statements are true”, loose upper bounds count as true.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Cheat sheet: structures in this course</h3>
+    <div class="tablebox"><table>
+      <thead><tr><th>Operation</th><th>Ω (best)</th><th>O (worst)</th><th>Θ</th></tr></thead>
+      <tbody id="cheat"></tbody>
+    </table></div>
+  </div>
+</section>
+
+<!-- ============ PRACTICE ============ -->
+<section class="view" id="v-practice" hidden>
+  <div class="card">
+    <div class="row" style="justify-content:space-between">
+      <div class="score"><span>Score</span><b id="scoreN">0</b><span class="muted">/ <span id="scoreD">0</span> answered</span></div>
+      <button class="btn" id="resetPractice">Start over</button>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Part A · True or false</h2>
+    <p class="muted small">Each statement is about the function itself, using the slide 36 definitions. Loose upper bounds are true; a lower bound above the real growth is false.</p>
+    <div id="partA" style="display:grid;gap:16px"></div>
+  </div>
+  <div class="card">
+    <h2>Part B · Read the code</h2>
+    <p class="muted small">For each fragment give the best case as Ω, the worst case as O, and Θ if one bound covers every input. Then check.</p>
+    <div id="partB" style="display:grid;gap:16px"></div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+"use strict";
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+let MK=0;
+const chip=(k,t)=>`<span class="chip ${k}">${t}</span>`;
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+function markers(id){
+  return `<defs>${["muted","O","Om","Th"].map(c=>`<marker id="${id}-${c}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" class="mk-${c}"/></marker>`).join("")}</defs>`;
+}
+
+/* ---------- tabs ---------- */
+const VIEWS=["arrays","labquiz","notation","practice"];
+function show(v){
+  if(!VIEWS.includes(v)) v="arrays";
+  VIEWS.forEach(x=>{$("#v-"+x).hidden = x!==v;});
+  $$("nav.tabs button").forEach(b=>b.setAttribute("aria-selected", b.dataset.view===v));
+}
+$$("nav.tabs button").forEach(b=>b.addEventListener("click",()=>{ location.hash=b.dataset.view; show(b.dataset.view); window.scrollTo({top:0}); }));
+window.addEventListener("hashchange",()=>show(location.hash.slice(1)));
+
+/* ---------- stepper ---------- */
+function stepper(el, steps){
+  let i=0;
+  el.innerHTML=`<div class="stepper"><div class="diagram"></div><p class="cap"></p><div class="ctrl"><button class="btn" data-a="p">◀ Back</button><button class="btn primary" data-a="n">Next ▶</button><span class="count"></span></div></div>`;
+  const d=$(".diagram",el), c=$(".cap",el), cnt=$(".count",el), bp=$('[data-a="p"]',el), bn=$('[data-a="n"]',el);
+  function r(){ d.innerHTML=steps[i].svg; c.innerHTML=steps[i].cap; cnt.textContent=`step ${i+1} of ${steps.length}`; bp.disabled=i===0; bn.disabled=i===steps.length-1; }
+  bp.onclick=()=>{ if(i>0){i--;r();} }; bn.onclick=()=>{ if(i<steps.length-1){i++;r();} };
+  if(steps.length===1) $(".ctrl",el).hidden=true;
+  r();
+}
+
+/* ---------- binary tree svg ---------- */
+const ht=n=>n?1+Math.max(ht(n.l),ht(n.r)):0;
+const bfOf=n=>ht(n.l)-ht(n.r);
+const clone=n=>n?{v:n.v,l:clone(n.l),r:clone(n.r)}:null;
+function binSVG(root,opt={}){
+  const hl=opt.hl||{}, pos=new Map(); let idx=0, maxD=0;
+  (function lay(n,d){ if(!n)return; lay(n.l,d+1); pos.set(n,{x:idx++,d}); maxD=Math.max(maxD,d); lay(n.r,d+1); })(root,0);
+  const SX=48, SY=64, W=Math.max(idx*SX+40,200), H=(maxD+1)*SY+20;
+  const X=n=>20+SX/2+pos.get(n).x*SX, Y=n=>30+pos.get(n).d*SY;
+  let e="", s="";
+  (function walk(n){ if(!n)return; [n.l,n.r].forEach(c=>{ if(c){ e+=`<line class="edge" x1="${X(n)}" y1="${Y(n)}" x2="${X(c)}" y2="${Y(c)}"/>`; walk(c);} }); })(root);
+  pos.forEach((p,n)=>{
+    const cls=hl[n.v]||""; s+=`<g class="nd ${cls}"><circle cx="${X(n)}" cy="${Y(n)}" r="17"/><text x="${X(n)}" y="${Y(n)}">${n.v}</text></g>`;
+    if(opt.bf!==false){ const b=bfOf(n); const t=(b>0?"+":"")+b; s+=`<text class="lbl ${Math.abs(b)>1?"bad":""}" x="${X(n)+15}" y="${Y(n)-17}">${t}</text>`; }
+    if(opt.tags&&opt.tags[n.v]) s+=`<text class="lbl big th" x="${X(n)}" y="${Y(n)+31}" text-anchor="middle">${opt.tags[n.v]}</text>`;
+  });
+  if(!root) s=`<text class="lbl" x="100" y="40" text-anchor="middle">empty tree</text>`;
+  return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="binary tree">${e}${s}</svg>`;
+}
+
+/* ---------- AVL engine (records snapshots) ---------- */
+const rotR=z=>{const y=z.l; z.l=y.r; y.r=z; return y;};
+const rotL=z=>{const y=z.r; z.r=y.l; y.l=z; return y;};
+function relink(root,parent,old,nw){ if(!parent) return nw; if(parent.l===old) parent.l=nw; else parent.r=nw; return root; }
+function avlInsert(root,v){
+  const steps=[], path=[];
+  if(!root){ root={v,l:null,r:null}; steps.push({tree:clone(root),hl:{[v]:"new"},cap:`Insert <b>${v}</b>: the tree was empty, so ${v} becomes the root.`}); return {root,steps}; }
+  let c=root;
+  while(true){ path.push(c); if(v===c.v){ steps.push({tree:clone(root),hl:{[v]:"piv"},cap:`${v} is already in the tree, so nothing changes.`}); return {root,steps}; }
+    const k=v<c.v?"l":"r"; if(!c[k]){ c[k]={v,l:null,r:null}; break; } c=c[k]; }
+  const route=path.map(p=>p.v).join(" → ");
+  for(let i=path.length-1;i>=0;i--){
+    const z=path[i], b=bfOf(z);
+    if(Math.abs(b)<2) continue;
+    const parent=path[i-1]||null, y=b>0?z.l:z.r, yb=bfOf(y);
+    const kind = b>0 ? (yb>=0?"LL":"LR") : (yb<=0?"RR":"RL");
+    steps.push({tree:clone(root),hl:{[v]:"new",[z.v]:"bad",[y.v]:"piv"},cap:`Insert <b>${v}</b> (path ${route} → ${v}). Walking back up, the first unbalanced node is <b>${z.v}</b> with BF ${b>0?"+":""}${b}. Its child ${y.v} leans ${yb>0?"left":"right"}, so this is the <b>${kind}</b> case.`});
+    if(kind==="LL"){ const nz=rotR(z); root=relink(root,parent,z,nz); steps.push({tree:clone(root),hl:{[v]:"new",[nz.v]:"vis"},cap:`<b>Right rotation on ${z.v}</b>: ${y.v} moves up, ${z.v} becomes its right child. Every BF is back in {−1, 0, +1}.`}); }
+    else if(kind==="RR"){ const nz=rotL(z); root=relink(root,parent,z,nz); steps.push({tree:clone(root),hl:{[v]:"new",[nz.v]:"vis"},cap:`<b>Left rotation on ${z.v}</b>: ${y.v} moves up, ${z.v} becomes its left child. Balanced again.`}); }
+    else if(kind==="LR"){ z.l=rotL(y); steps.push({tree:clone(root),hl:{[z.v]:"bad",[z.l.v]:"piv"},cap:`Step 1 of 2: <b>left rotation on ${y.v}</b> turns the zig-zag into a straight line (now an LL shape under ${z.v}).`}); const nz=rotR(z); root=relink(root,parent,z,nz); steps.push({tree:clone(root),hl:{[nz.v]:"vis"},cap:`Step 2 of 2: <b>right rotation on ${z.v}</b>. ${nz.v} ends up on top of this subtree.`}); }
+    else { z.r=rotR(y); steps.push({tree:clone(root),hl:{[z.v]:"bad",[z.r.v]:"piv"},cap:`Step 1 of 2: <b>right rotation on ${y.v}</b> turns the zig-zag into a straight line (now an RR shape under ${z.v}).`}); const nz=rotL(z); root=relink(root,parent,z,nz); steps.push({tree:clone(root),hl:{[nz.v]:"vis"},cap:`Step 2 of 2: <b>left rotation on ${z.v}</b>. ${nz.v} ends up on top of this subtree.`}); }
+    return {root,steps};
+  }
+  steps.push({tree:clone(root),hl:{[v]:"new"},cap:`Insert <b>${v}</b> (path ${route} → ${v}). Every BF is within {−1, 0, +1}, so no rotation.`});
+  return {root,steps};
+}
+function avlRun(seq, from=0){
+  let root=null, out=[];
+  seq.forEach((v,i)=>{
+    const r=avlInsert(root,v); root=r.root;
+    if(i>=from) out.push(...r.steps);
+    if(i===from-1) out.push({tree:clone(root),hl:{},cap:`After inserting ${seq.slice(0,from).join(", ")}: no rotation was needed yet. The numbers next to each node are balance factors.`});
+  });
+  out.push({tree:clone(root),hl:{[root.v]:"vis"},cap:`Final tree. Root is <b>${root.v}</b>.`});
+  return out.map(s=>({svg:binSVG(s.tree,{hl:s.hl}),cap:s.cap}));
+}
+
+/* ---------- general tree svg ---------- */
+const GT=()=>({v:10,c:[{v:20,c:[{v:50},{v:60}]},{v:30},{v:40,c:[{v:70},{v:80}]}]});
+function genSVG(root,opt={}){
+  const cls=opt.cls||{}, tags=opt.tags||{}, es=opt.edge||{}, hidden=opt.hide||{};
+  let leaf=0, maxD=0; const all=[];
+  (function lay(n,d){ n._d=d; maxD=Math.max(maxD,d); all.push(n); const kids=(n.c||[]).filter(k=>!hidden[k.v]);
+    if(!kids.length) n._x=leaf++; else { kids.forEach(k=>lay(k,d+1)); n._x=(kids[0]._x+kids[kids.length-1]._x)/2; } })(root,0);
+  const SX=72, SY=78, L=opt.levels?64:20, W=L+leaf*SX+10, H=(maxD+1)*SY+(opt.extraH||0);
+  const X=n=>L+SX/2+n._x*SX, Y=n=>34+n._d*SY;
+  const id="m"+(++MK); let e="", s="", lv="";
+  all.forEach(n=>(n.c||[]).filter(k=>!hidden[k.v]).forEach(k=>{
+    const st=es[k.v]||(cls[k.v]==="dim"?"dim":"");
+    if(st==="parentonly"){ e+=`<line class="edge dashed" x1="${X(k)}" y1="${Y(k)-18}" x2="${X(n)}" y2="${Y(n)+18}" marker-end="url(#${id}-Th)"/>`; }
+    else if(st!=="none") e+=`<line class="edge ${st}" x1="${X(n)}" y1="${Y(n)}" x2="${X(k)}" y2="${Y(k)}"/>`;
+  }));
+  all.forEach(n=>{ s+=`<g class="nd ${cls[n.v]||""}"><circle cx="${X(n)}" cy="${Y(n)}" r="19"/><text x="${X(n)}" y="${Y(n)}">${n.v}</text></g>`;
+    if(tags[n.v]) s+=`<text class="lbl big th" x="${X(n)+22}" y="${Y(n)-16}">${tags[n.v]}</text>`; });
+  if(opt.levels) for(let d=0;d<=maxD;d++) lv+=`<text class="lbl big" x="6" y="${34+d*SY+4}">depth ${d}</text><line class="gridl" x1="58" x2="${W-6}" y1="${34+d*SY}" y2="${34+d*SY}" stroke-dasharray="2 4"/>`;
+  return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="general tree">${markers(id)}${lv}${e}${s}${opt.extra||""}</svg>`;
+}
+
+/* ---------- linked list svg ---------- */
+function listSVG(o){
+  const vals=o.vals, n=vals.length, BW=52, BH=34, G=44, x0=20+(o.lpad||0), y0=o.top||46;
+  const W=x0+n*BW+(n-1)*G+(o.nullEnd?70:20), H=y0+BH+(o.doubly?40:30);
+  const id="m"+(++MK); let s="";
+  const X=i=>x0+i*(BW+G);
+  for(let i=0;i<n-1;i++){
+    const hot=(o.hotF||[]).includes(i);
+    s+=`<line class="edge ${hot?"hot":""}" x1="${X(i)+BW}" y1="${y0+BH/2-(o.doubly?7:0)}" x2="${X(i+1)-2}" y2="${y0+BH/2-(o.doubly?7:0)}" marker-end="url(#${id}-${hot?"O":"muted"})"/>`;
+    if(hot&&o.hopNums) s+=`<text class="lbl o" x="${X(i)+BW+G/2}" y="${y0+BH/2-(o.doubly?13:6)}" text-anchor="middle">${i+1}</text>`;
+    if(o.doubly){ const hb=(o.hotB||[]).includes(i+1);
+      s+=`<line class="edge ${hb?"ok":""}" x1="${X(i+1)}" y1="${y0+BH/2+7}" x2="${X(i)+BW+2}" y2="${y0+BH/2+7}" marker-end="url(#${id}-${hb?"Om":"muted"})"/>`; }
+  }
+  if(o.nullEnd) s+=`<line class="edge" x1="${X(n-1)+BW}" y1="${y0+BH/2}" x2="${X(n-1)+BW+26}" y2="${y0+BH/2}" marker-end="url(#${id}-muted)"/><text class="lbl" x="${X(n-1)+BW+30}" y="${y0+BH/2+4}">null</text>`;
+  vals.forEach((v,i)=>{ const c=(o.cls||{})[i]||""; s+=`<g class="nd ${c}"><rect x="${X(i)}" y="${y0}" width="${BW}" height="${BH}" rx="6"/><text x="${X(i)+BW/2}" y="${y0+BH/2}">${v}</text></g>`; });
+  Object.entries(o.ptr||{}).forEach(([i,l])=>{ i=+i; s+=`<text class="lbl big th" x="${X(i)+BW/2}" y="${y0-24}" text-anchor="middle">${l}</text><line class="edge dashed" x1="${X(i)+BW/2}" y1="${y0-20}" x2="${X(i)+BW/2}" y2="${y0-3}" marker-end="url(#${id}-Th)"/>`; });
+  if(o.note) s+=`<text class="lbl big ${o.noteCls||""}" x="${x0}" y="${H-6}">${o.note}</text>`;
+  return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="linked list">${markers(id)}${s}</svg>`;
+}
+
+/* ---------- array svg ---------- */
+const ARR=[12,7,31,4,19,25], CAP=8, NEWV=99;
+function arrSVG(sp){
+  const BW=44, BH=36, G=6, P=BW+G, x0=20+P, n=sp.before.length;
+  const X=i=>x0+i*P, yB=40, yA=sp.after?150:null, H=sp.after?216:(sp.ptr?120:104), W=x0+CAP*P+20;
+  const id="m"+(++MK); let s="";
+  function row(vals,y,label,mark){
+    s+=`<text class="lbl big" x="8" y="${y-10}">${label}</text>`;
+    for(let i=0;i<CAP;i++){
+      const has=i<vals.length; let c=has?"":"spare";
+      if(mark){ if(mark.hl&&mark.hl.includes(i)) c="piv"; if(mark.newAt===i) c="new"; if(mark.rm===i) c="rm"; }
+      s+=`<g class="nd ${c}"><rect x="${X(i)}" y="${y}" width="${BW}" height="${BH}" rx="4"/>${has?`<text x="${X(i)+BW/2}" y="${y+BH/2}">${vals[i]}</text>`:""}</g>`;
+      s+=`<text class="lbl" x="${X(i)+BW/2}" y="${y+BH+13}" text-anchor="middle">${i}</text>`;
+    }
+  }
+  row(sp.before,yB,"before",{hl:sp.hl,rm:sp.rm,newAt:sp.after?null:sp.newAt});
+  if(sp.after){
+    row(sp.after,yA,"after",{newAt:sp.newAt,hl:sp.hlA});
+    (sp.moves||[]).forEach(([a,b])=>{ s+=`<line class="edge mv" x1="${X(a)+BW/2}" y1="${yB+BH+16}" x2="${X(b)+BW/2}" y2="${yA-4}" marker-end="url(#${id}-O)"/>`; });
+  }
+  if(sp.ptr){ const {from,to,ok}=sp.ptr, xa=X(from)+BW/2, xb=X(to)+BW/2, yy=yB-4;
+    s+=`<path class="edge ${ok?"ok":"hot"}" d="M${xa},${yy} C${xa},${yy-26} ${xb},${yy-26} ${xb},${yy}" marker-end="url(#${id}-${ok?"Om":"O"})"/>`;
+    if(!ok) s+=`<text class="lbl bad" x="${xb}" y="${yB+BH/2+4}" text-anchor="middle" style="font-size:20px">✕</text>`;
+  }
+  return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="array diagram">${markers(id)}${s}</svg>`;
+}
+const insAt=k=>({before:ARR,after:ARR.slice(0,k).concat([NEWV],ARR.slice(k)),moves:[...Array(ARR.length-k)].map((_,j)=>[ARR.length-1-j,ARR.length-j]),newAt:k});
+const remAt=k=>({before:ARR,after:ARR.filter((_,i)=>i!==k),rm:k,moves:[...Array(ARR.length-1-k)].map((_,j)=>[k+1+j,k+j])});
+
+const OPS=["Access","Insert Before","Insert After","Replace","Remove","Next","Previous"];
+const CELLS={
+ "Access|f":{t:"1",steps:"1 read",sp:{before:ARR,hl:[0]},ex:"A[0] lives at <i>base address + 0 × sizeof(int)</i>. One address calculation, one memory read, no matter how big n is."},
+ "Access|b":{t:"1",steps:"1 read",sp:{before:ARR,hl:[5]},ex:"A[n−1] lives at <i>base + (n−1) × sizeof(int)</i>. It is the same single jump as the front. Arrays have random access."},
+ "Insert Before|f":{t:"n",steps:"n shifts + 1 write = n + 1",sp:insAt(0),ex:"X must sit at index 0, so all n elements slide one slot right. Shift from the back (A[i+1] = A[i] for i = n−1 down to 0) so nothing gets overwritten, then write X. With n = 6 that is the 6 orange arrows."},
+ "Insert After|f":{t:"n",steps:"(n − 1) shifts + 1 write = n",sp:insAt(1),ex:"X goes right after the first element, at index 1. Elements 1 … n−1 slide right: n−1 shifts. n−1 still grows linearly, so this is Θ(n)."},
+ "Replace|f":{t:"1",steps:"1 write",sp:{before:ARR,after:[NEWV].concat(ARR.slice(1)),newAt:0,moves:[]},ex:"A[0] = X overwrites in place. Nothing moves."},
+ "Remove|f":{t:"n",steps:"(n − 1) shifts",sp:remAt(0),ex:"After deleting A[0] there is a hole at the front. Elements 1 … n−1 slide one slot left to close it, then size−−. n−1 shifts is Θ(n)."},
+ "Next|f":{t:"1",steps:"1 index add",sp:{before:ARR,hl:[1],ptr:{from:0,to:1,ok:true}},ex:"The element after index 0 is index 1. Computing i + 1 and reading it is constant work."},
+ "Previous|f":{t:"1",steps:"1 comparison",sp:{before:ARR,ptr:{from:0,to:-1,ok:false}},ex:"Index 0 has no previous element. The code checks <code>i − 1 &lt; 0</code> and stops: one comparison."},
+ "Insert Before|b":{t:"1",steps:"1 shift + 1 write",sp:insAt(5),ex:"X must sit before the last element, at index n−1. Only the old last element moves (into spare slot n). One shift and one write, whatever n is."},
+ "Insert After|b":{t:"1",steps:"1 write",sp:insAt(6),ex:"This is push_back. There is spare capacity, so X goes straight into slot n and size++. Without spare capacity a resize would copy all n elements, but the quiz rules that out."},
+ "Replace|b":{t:"1",steps:"1 write",sp:{before:ARR,after:ARR.slice(0,5).concat([NEWV]),newAt:5,moves:[]},ex:"A[n−1] = X overwrites in place."},
+ "Remove|b":{t:"1",steps:"size−− only",sp:remAt(5),ex:"Nothing sits after the last element, so nothing shifts. Decrement size and you are done."},
+ "Next|b":{t:"1",steps:"1 comparison",sp:{before:ARR,ptr:{from:5,to:6,ok:false}},ex:"Index n is past the end (slot n is spare, not data). The code checks <code>i + 1 ≥ size</code>: one comparison."},
+ "Previous|b":{t:"1",steps:"1 index subtract",sp:{before:ARR,hl:[4],ptr:{from:5,to:4,ok:true}},ex:"The element before index n−1 is index n−2. Constant work."}
+};
+const big=t=>t==="1"?"1":t;
+function tri(t){ return chip("O",`O(${big(t)})`)+chip("Om",`Ω(${big(t)})`)+chip("Th",`Θ(${big(t)})`); }
+let arrHidden=false, arrSel="Insert Before|f", revealed=new Set();
+function renderArrTable(){
+  $("#arrTable tbody").innerHTML=OPS.map(op=>`<tr><td class="op">${op}</td>${["f","b"].map(sd=>{const k=op+"|"+sd, c=CELLS[k], show=!arrHidden||revealed.has(k);
+    return `<td><button class="cellbtn ${arrSel===k?"sel":""}" data-k="${k}" aria-label="${op} at ${sd==="f"?"front":"back"}">${show?tri(c.t):`<span class="q">tap to reveal</span>`}</button></td>`;}).join("")}</tr>`).join("");
+  $$("#arrTable .cellbtn").forEach(b=>b.onclick=()=>{ arrSel=b.dataset.k; revealed.add(arrSel); renderArrTable(); renderArrDetail(); });
+}
+function renderArrDetail(){
+  const [op,sd]=arrSel.split("|"), c=CELLS[arrSel], show=!arrHidden||revealed.has(arrSel);
+  $("#arrDetail").innerHTML=`<div class="row" style="justify-content:space-between"><h3>${op} · ${sd==="f"?"Front / 1st":"Back / nth"}</h3><div class="chips">${show?tri(c.t):""}</div></div>
+  <div class="diagram">${arrSVG(c.sp)}</div>
+  <p>${c.ex}</p>
+  <div class="cx"><span class="h">Steps</span><span class="mono">${c.steps}</span><span class="h">Why Θ</span><span class="small">${c.t==="1"?"The count does not depend on n at all, so best = worst = constant.":"The count is a fixed linear formula of n for every input, so best = worst = linear."}</span></div>`;
+}
+$("#arrShow").onclick=()=>{arrHidden=false; $("#arrShow").setAttribute("aria-pressed","true"); $("#arrHide").setAttribute("aria-pressed","false"); renderArrTable(); renderArrDetail();};
+$("#arrHide").onclick=()=>{arrHidden=true; revealed=new Set(); $("#arrShow").setAttribute("aria-pressed","false"); $("#arrHide").setAttribute("aria-pressed","true"); renderArrTable(); renderArrDetail();};
+function renderK(){
+  const k=+$("#kSlider").value, n=ARR.length; $("#kVal").textContent=k;
+  $("#kDiagram").innerHTML=arrSVG(insAt(k));
+  const m=n-k;
+  $("#kVerdict").innerHTML=`<div><b>${m}</b> shift${m===1?"":"s"} + 1 write for n = ${n}, k = ${k}.</div><div>${k===0?"This is the <b>worst</b> input: every element moves, giving the O(n) bound.":k===n?"This is the <b>best</b> input: nothing moves, giving the Ω(1) bound.":"Somewhere in between. Cost n − k changes with k, so the best and worst cases differ."}</div>`;
+}
+$("#kSlider").addEventListener("input",renderK);
+
+/* ---------- dot grid for loop questions ---------- */
+function loopGrid(el, mode){
+  el.innerHTML=`<div class="row"><label class="mono small" for="lg-${mode}">n = <b>8</b></label><input id="lg-${mode}" type="range" min="1" max="16" value="8" style="flex:1 1 200px"></div><div class="diagram"></div><p class="cap small"></p>`;
+  const inp=$("input",el), d=$(".diagram",el), c=$(".cap",el), lb=$("label b",el);
+  function r(){ const n=+inp.value; lb.textContent=n; let s="", W, H;
+    if(mode==="seq"){ const R=9; W=40+16*R*2; H=90;
+      for(let i=0;i<n;i++){ s+=`<circle class="dot" cx="${80+i*18}" cy="28" r="6"/>`; s+=`<circle class="dot2" cx="${80+i*18}" cy="62" r="6"/>`; }
+      s+=`<text class="lbl big" x="6" y="32">loop i</text><text class="lbl big" x="6" y="66">loop j</text>`; W=80+16*18+20;
+      c.innerHTML=`Loop 1 does ${n}, loop 2 does ${n}: total <b>${2*n}</b> = 2n. Doubling n doubles the dots, so it is linear, Θ(n). Nested n × n would be ${n*n}.`;
+    } else { W=80+16*18+20; H=30+n*18;
+      for(let i=0;i<n;i++) for(let j=0;j<5;j++) s+=`<circle class="dot" cx="${80+j*18}" cy="${20+i*18}" r="6"/>`;
+      for(let i=0;i<n;i++) s+=`<text class="lbl" x="6" y="${24+i*18}">i=${i}</text>`;
+      s+=`<text class="lbl big o" x="${80+5*18+10}" y="24">j always stops at 5</text>`;
+      c.innerHTML=`${n} rows × 5 columns = <b>${5*n}</b> prints. The width never changes; only the height grows with n. 5n → Θ(n). For it to be n² the inner loop would have to run to n.`;
+    }
+    d.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">${s}</svg>`; }
+  inp.addEventListener("input",r); r();
+}
+
+/* ---------- lab quiz data ---------- */
+const X2={v:"X",l:{v:"A",l:{v:"B",l:{v:"C"},r:null},r:{v:"E"}},r:{v:"D"}};
+function preSteps(){
+  const order=[10,20,50,60,30,40,70,80], st=[];
+  for(let i=0;i<=order.length;i++){
+    const cls={}, tags={}; order.slice(0,i).forEach((v,j)=>{cls[v]="vis"; tags[v]=String(j+1);});
+    if(i<order.length) cls[order[i]]="piv";
+    st.push({svg:genSVG(GT(),{cls,tags}),cap:i===0?"Pre-order = <b>visit the node, then each child subtree left to right</b>. Start at the root.":i<order.length?`Visited so far: <b>${order.slice(0,i).join(", ")}</b>. Next (amber): ${order[i]}.`:`Done: <b>10, 20, 50, 60, 30, 40, 70, 80</b>. Option d (50, 60, 20, 30, 70, 80, 40, 10) is post-order: children first, root last.`});
+  }
+  return st;
+}
+const LQ=[
+ {n:1,topic:"AVL",ok:false,q:"Insert 50, 30, 70, 20, 40, 60, 80, 10, 5 into an empty AVL tree. Which statement describes the final tree?",
+  opts:["Root is 40, and node 30 has children 10 and 50.","Root is 50, and node 10 has children 5 and 20.","Root is 30, and node 20 has children 5 and 10.","Root is 50, and node 20 has children 5 and 30."],a:1,
+  ex:"The first seven keys form a perfect tree, so nothing rotates. 10 and 5 both go down the far left. After 5, nodes 20 <i>and</i> 30 both show BF +2. <b>Always fix the lowest unbalanced node first</b> (20). One right rotation on 20 lifts 10, and that also fixes 30. The root never changes, so it stays 50.",
+  steps:()=>avlRun([50,30,70,20,40,60,80,10,5],7),
+  cx:{op:"One AVL insert",O:"O(log n)",Om:"Ω(log n)",Th:"Θ(log n)",note:"Walk down a tree of height ≈ log₂ n, then at most one (single or double) rotation, which is Θ(1). Building the whole tree with n inserts is Θ(n log n)."}},
+ {n:2,topic:"AVL",ok:false,q:"A node has left subtree height 3 and right subtree height 1. What is its balance factor, and is it balanced?",
+  opts:["BF = −1, Balanced","BF = +1, Balanced","BF = −2, Unbalanced","BF = +2, Unbalanced"],a:3,
+  ex:"Course convention: <b>BF = height(left) − height(right)</b> = 3 − 1 = <b>+2</b>. AVL allows only −1, 0, +1, so the node is unbalanced. Positive means left-heavy, which is fixed with a right rotation (LL) or left-then-right (LR). Signs to memorise: + is left-heavy, − is right-heavy.",
+  steps:()=>[{svg:binSVG(X2,{hl:{X:"bad"}}),cap:"X’s left subtree (A, B, E, C) is 3 levels tall; its right subtree (D) is 1 level. BF(X) = 3 − 1 = +2, drawn in red. Every other node is within ±1."}],
+  cx:{op:"Compute one BF",O:"O(1)",Om:"Ω(1)",Th:"Θ(1)",note:"With heights stored in each node it is one subtraction. If height() is computed recursively instead, it costs Θ(size of that subtree)."}},
+ {n:3,topic:"Tree traversal",ok:false,picked:3,q:"What is the correct pre-order traversal of the general tree (10 → 20, 30, 40; 20 → 50, 60; 40 → 70, 80)?",
+  opts:["10, 20, 50, 60, 30, 40, 70, 80","50, 20, 60, 10, 30, 70, 40, 80","10, 20, 30, 40, 50, 60, 70, 80","50, 60, 20, 30, 70, 80, 40, 10"],a:0,
+  ex:"Pre means the node comes <b>before</b> its children. Go deep into 20’s subtree (50, 60) before moving to 30. Option c is level-order (breadth-first), and d, the one you picked, is post-order.",
+  steps:preSteps,
+  cx:{op:"Full traversal",O:"O(n)",Om:"Ω(n)",Th:"Θ(n)",note:"Every node is visited exactly once, whatever the shape. Best = worst = n, so Θ(n)."}},
+ {n:4,topic:"AVL",ok:true,q:"Insert 30, 20, 10 into an AVL tree. Which rotation restores balance?",
+  opts:["Right rotation on 30","Left rotation on 30","Left-right rotation on 30","Right-left rotation on 30"],a:0,
+  ex:"A straight line down the left (LL case) needs one <b>right</b> rotation at the unbalanced node. The rotation is named after the direction the tree turns, which is the opposite of the heavy side.",
+  steps:()=>avlRun([30,20,10]),
+  cx:{op:"Single rotation",O:"O(1)",Om:"Ω(1)",Th:"Θ(1)",note:"A rotation rewires three pointers, independent of n."}},
+ {n:5,topic:"Linked lists",ok:false,q:"In a doubly linked list you hold a pointer to a middle node. Which operation is O(1) using prev but needs traversal in a singly linked list?",
+  opts:["Updating the current node’s data","Accessing the previous node","Accessing the next node","Reading the current node’s data"],a:1,
+  ex:"Reading, updating and moving to next use the node itself or its <code>next</code>, which both lists have. Only going <b>backwards</b> needs <code>prev</code>. A singly linked list has no backward pointer, so you must restart at head and walk until <code>temp-&gt;next == cur</code>.",
+  steps:()=>[
+   {svg:listSVG({vals:[3,8,5,9,2],ptr:{0:"head",3:"cur"},hotF:[0,1,2],hopNums:true,cls:{2:"piv"},note:"singly: walk from head until temp->next == cur  →  O(n)",noteCls:"o",nullEnd:true}),cap:"<b>Singly linked:</b> from <code>cur</code> alone you cannot go back. Starting at head takes 3 hops here, and up to n − 1 when cur is the last node."},
+   {svg:listSVG({vals:[3,8,5,9,2],doubly:true,ptr:{3:"cur"},hotB:[3],cls:{2:"vis"},note:"doubly: cur->prev  →  Θ(1)",noteCls:"om",nullEnd:true}),cap:"<b>Doubly linked:</b> <code>cur-&gt;prev</code> is one pointer read (green arrow). The cost is the extra memory for one more pointer per node."}],
+  cx:{op:"Previous node",O:"SLL O(n) · DLL O(1)",Om:"SLL Ω(1) · DLL Ω(1)",Th:"SLL none · DLL Θ(1)",note:"Singly: best case cur is the 2nd node (1 hop), worst case the last node (n−1 hops), so there is no single Θ. Doubly is always one step."}},
+ {n:6,topic:"Tree terms",ok:false,picked:1,q:"With root depth = 0 and leaf height = 0, what are the depth of node 70 and the height of the tree?",
+  opts:["Depth = 2, Height = 3","Depth = 1, Height = 2","Depth = 2, Height = 2","Depth = 3, Height = 2"],a:2,
+  ex:"<b>Depth</b> counts edges from the root down to the node: 10 → 40 → 70 is 2 edges. <b>Height of the tree</b> is the longest root-to-leaf path in edges: also 2. You chose depth 1, which is the depth of 40, 70’s parent. Count edges, not nodes, and don’t stop one level early.",
+  steps:()=>[{svg:genSVG(GT(),{levels:true,cls:{10:"vis",40:"vis",70:"piv"},edge:{40:"ok",70:"ok"}}),cap:"Green path 10 → 40 → 70 = 2 edges, so depth(70) = 2. The deepest leaves sit on depth 2, so height = 2."}],
+  cx:{op:"depth(node) / height(tree)",O:"O(n) · O(n)",Om:"Ω(1) · Ω(n)",Th:"none · Θ(n)",note:"Depth via parent pointers costs Θ(depth): 1 for a child of the root, n−1 in a chain. Height must look at every node, so it is always Θ(n)."}},
+ {n:7,topic:"Tree terms",ok:false,picked:1,q:"What is the degree of node 10?",
+  opts:["5","2","3","4"],a:2,
+  ex:"<b>Degree of a node = number of children.</b> 10 has three: 20, 30, 40. You picked 2, probably from binary-tree habit. This is a general tree, so a node can have any number of children. (Degree of the whole tree = the largest node degree, also 3 here.)",
+  steps:()=>[{svg:genSVG(GT(),{cls:{10:"piv",20:"vis",30:"vis",40:"vis",50:"dim",60:"dim",70:"dim",80:"dim"},edge:{20:"ok",30:"ok",40:"ok"},tags:{20:"1",30:"2",40:"3"}}),cap:"Count the edges going down from 10: three children, so degree 3. The grandchildren do not count."}],
+  cx:{op:"degree(node)",O:"O(1)",Om:"Ω(1)",Th:"Θ(1)",note:"With a children vector it is just <code>children.size()</code>."}},
+ {n:8,topic:"Tree delete",ok:false,picked:2,q:"If node 40 is deleted using the subtree-deletion function, how many nodes remain?",
+  opts:["4","5","6","7"],a:1,
+  ex:"Subtree deletion removes the node <b>and everything below it</b>: 40, 70, 80. 8 − 3 = <b>5</b> remain (10, 20, 30, 50, 60). You picked 6, which would mean only 40 and one child left. The function deletes children recursively first (post-order), then the node, then removes it from its parent’s children vector.",
+  steps:()=>[
+   {svg:genSVG(GT(),{cls:{40:"bad",70:"bad",80:"bad"}}),cap:"Delete subtree rooted at 40: the red nodes all go (3 nodes)."},
+   {svg:genSVG(GT(),{hide:{40:true}}),cap:"5 nodes remain: 10, 20, 30, 50, 60."}],
+  cx:{op:"Delete a subtree of m nodes",O:"O(n)",Om:"Ω(1)",Th:"Θ(m)",note:"Each deleted node is visited once: Θ(m), m = subtree size (3 here). Worst case the root, m = n; best case a leaf, m = 1. Finding the node first by search adds O(n)."}},
+ {n:9,topic:"Big O",ok:true,q:"Overall time complexity of two separate loops, each from 0 to n?",
+  opts:["O(n²)","O(log n)","O(1)","O(n)"],a:3,
+  ex:"Loops one after another <b>add</b>: n + n = 2n. Drop the constant: Θ(n). Only <i>nested</i> loops multiply.",
+  grid:"seq",
+  cx:{op:"Two sequential loops",O:"O(n)",Om:"Ω(n)",Th:"Θ(n)",note:"No early exit, so every input does exactly 2n prints. Best = worst, so the Θ exists."}},
+ {n:10,topic:"Array vs list",ok:true,q:"Accessing an element at a known index k: dynamic array vs singly linked list?",
+  opts:["Both require traversal from the beginning.","Both require searching by value.","The array provides direct access, while the linked list requires traversal.","The linked list provides direct access, while the array requires traversal."],a:2,
+  ex:"Array elements sit side by side in memory, so A[k] is one address calculation. List nodes are scattered; the only way to node k is to follow k next pointers from head.",
+  steps:()=>[
+   {svg:arrSVG({before:ARR,hl:[3]}),cap:"<b>Array:</b> A[3] = base + 3 × 4 bytes. One jump, Θ(1)."},
+   {svg:listSVG({vals:ARR,ptr:{0:"head",3:"k = 3"},hotF:[0,1,2],hopNums:true,cls:{3:"piv"},nullEnd:true}),cap:"<b>Linked list:</b> 3 hops to reach index 3. In general k hops: Θ(k), so up to n−1."}],
+  cx:{op:"Access index k",O:"array O(1) · list O(n)",Om:"array Ω(1) · list Ω(1)",Th:"array Θ(1) · list none",note:"For the list, k = 0 is 0 hops and k = n−1 is n−1 hops, so best and worst differ (Θ(k) for a given k)."}},
+ {n:11,topic:"AVL",ok:true,q:"Insert 10, 30, 20 into an empty AVL tree. Which rotation sequence is required?",
+  opts:["Right rotation only","Right rotation on 30, then left rotation on 10","Left rotation only","Left rotation on 30, then right rotation on 10"],a:1,
+  ex:"10 → 30 → 20 is a zig-zag: right then left. That is the <b>RL</b> case: first a right rotation on the child (30) to straighten it, then a left rotation on the unbalanced node (10).",
+  steps:()=>avlRun([10,30,20]),
+  cx:{op:"Double rotation",O:"O(1)",Om:"Ω(1)",Th:"Θ(1)",note:"Two rotations is still a constant number of pointer changes."}},
+ {n:12,topic:"Big O",ok:false,q:"Time complexity of: for i < n { for j < 5 { print } }?",
+  opts:["O(n²)","O(5ⁿ)","O(n)","O(1)"],a:2,
+  ex:"The inner loop bound is the <b>constant 5</b>, not n. Total = 5 · n prints. Drop the 5: Θ(n). Nested only means n² when <i>both</i> loops depend on n. Drag n below and watch the grid grow only in one direction.",
+  grid:"nest",
+  cx:{op:"n × 5 nested loop",O:"O(n)",Om:"Ω(n)",Th:"Θ(n)",note:"Always exactly 5n operations. O(n²) would be true but loose, and the quiz expects the tight answer."}},
+ {n:13,topic:"AVL",ok:true,q:"Insert 40, 20, 60, 10, 30, 25 into an empty AVL tree. Which node becomes the root?",
+  opts:["25","30","20","40"],a:1,
+  ex:"25 lands under 30 on the left. Node 40 now has BF +2, and its left child 20 is right-leaning (BF −1): the <b>LR</b> case. Left rotation on 20, then right rotation on 40, lifts 30 to the root.",
+  steps:()=>avlRun([40,20,60,10,30,25],5),
+  cx:{op:"One AVL insert",O:"O(log n)",Om:"Ω(log n)",Th:"Θ(log n)",note:"Same as Q1: one walk down the height plus at most a double rotation."}},
+ {n:14,topic:"Linked lists",ok:true,q:"A singly linked list has 10,000 nodes. Searching sequentially for the value in the last node examines how many nodes?",
+  opts:["10,000","1","9,999","5,000"],a:0,
+  ex:"Every node from head to the last is compared once: 10,000. This is exactly the <b>worst case</b> of linear search.",
+  steps:()=>[{svg:listSVG({vals:["#1","#2","#3","…","#10000"],ptr:{0:"head",4:"found"},hotF:[0,1,2,3],cls:{0:"vis",1:"vis",2:"vis",3:"vis",4:"piv"},note:"comparisons: 1, 2, 3, … , 10,000",noteCls:"o",nullEnd:true}),cap:"Target in the last node: all n nodes are examined."}],
+  cx:{op:"Linear search",O:"O(n)",Om:"Ω(1)",Th:"none (worst case Θ(n))",note:"Best case: target is at head, 1 comparison. Worst case: last node or absent, n comparisons. Best ≠ worst, so no single Θ for the algorithm."}},
+ {n:15,topic:"General tree",ok:false,q:"Inserting a new child under an existing parent: which updates maintain the parent-child relationship?",
+  opts:["Set newNode->parent = nullptr and add the parent to newNode->children.","Set parent->parent = newNode and leave both children vectors unchanged.","Set newNode->parent = parent without updating parent->children.","Set newNode->parent = parent and add newNode to parent->children."],a:3,
+  ex:"The link is two-way, so <b>both</b> sides must be updated: the child points up (<code>newNode-&gt;parent = parent</code>) and the parent lists it (<code>parent-&gt;children.push_back(newNode)</code>). Option c sets only one direction, so a traversal from the root would never find the new node.",
+  steps:()=>{ const t=()=>{const g=GT(); g.c[1].c=[{v:90}]; return g;};
+   return [
+    {svg:genSVG(t(),{cls:{30:"piv",90:"new"},edge:{90:"none"}}),cap:"Create <code>newNode</code> (90). It is not connected to anything yet."},
+    {svg:genSVG(t(),{cls:{30:"piv",90:"new"},edge:{90:"parentonly"}}),cap:"<code>newNode-&gt;parent = parent;</code> 90 now points up to 30 (dashed). 30 still does not know about 90, which is where option c stops."},
+    {svg:genSVG(t(),{cls:{30:"vis",90:"new"}}),cap:"<code>parent-&gt;children.push_back(newNode);</code> Now 30’s children vector holds 90 and a traversal from the root reaches it."}];},
+  cx:{op:"Attach a child",O:"O(1)",Om:"Ω(1)",Th:"Θ(1)",note:"One assignment plus push_back (amortised constant). Finding the parent by value first would add O(n)."}}
+];
+const L="abcd";
+function renderLQ(){
+  $("#lqTable tbody").innerHTML=LQ.map(q=>`<tr data-n="${q.n}" style="cursor:pointer"><td class="mono">${q.n}</td><td>${q.topic}</td><td><b class="mono">${L[q.a]}.</b> ${esc(q.opts[q.a])}</td><td>${q.ok?'<span class="tag right">✓</span>':'<span class="tag wrong">✕</span>'}</td><td class="small">${q.cx.op}</td><td>${chip("O",q.cx.O)}</td><td>${chip("Om",q.cx.Om)}</td><td>${q.cx.Th.startsWith("none")?chip("none",q.cx.Th):chip("Th",q.cx.Th)}</td></tr>`).join("");
+  $$("#lqTable tbody tr").forEach(tr=>tr.onclick=()=>{ const d=$("#q"+tr.dataset.n); d.open=true; d.scrollIntoView({behavior:"smooth",block:"start"}); });
+  $("#lqCards").innerHTML=LQ.map(q=>`<details class="card q" id="q${q.n}" ${q.ok?"":"open"}>
+    <summary><div class="qhead"><span class="chev">▶</span><span class="qnum">Q${q.n}</span><span class="tag ${q.ok?"right":"wrong"}">${q.ok?"you got it":"missed"}</span><span class="tag topic">${q.topic}</span></div><h3 style="margin-top:6px">${esc(q.q)}</h3></summary>
+    <div style="display:grid;gap:14px;margin-top:12px">
+      <ol class="opts">${q.opts.map((o,i)=>`<li class="${i===q.a?"ans":""} ${i===q.picked?"picked":""}"><span class="l">${L[i]}.</span><span>${esc(o)}</span>${i===q.a?'<span class="why" style="color:var(--good)">correct</span>':i===q.picked?'<span class="why" style="color:var(--bad)">your pick</span>':""}</li>`).join("")}</ol>
+      <div class="viz"></div>
+      <p>${q.ex}</p>
+      <div class="cx"><span class="h">Operation</span><span>${q.cx.op}</span><span class="h">Upper</span><span>${chip("O",q.cx.O)}</span><span class="h">Lower</span><span>${chip("Om",q.cx.Om)}</span><span class="h">Tight</span><span>${q.cx.Th.startsWith("none")?chip("none",q.cx.Th):chip("Th",q.cx.Th)}</span><span class="h">Why</span><span class="small">${q.cx.note}</span></div>
+    </div></details>`).join("");
+  LQ.forEach(q=>{ const v=$("#q"+q.n+" .viz"); if(q.grid) loopGrid(v,q.grid); else stepper(v,q.steps()); });
+}
+$("#sbRun").onclick=()=>{ const keys=$("#sbIn").value.split(/[\s,]+/).map(Number).filter(x=>Number.isFinite(x)&&String(x)!=="").slice(0,20);
+  if(!keys.length){ $("#sbOut").innerHTML=`<p class="muted">Type at least one number, for example 10, 20, 30.</p>`; return; }
+  stepper($("#sbOut"),avlRun(keys)); };
+
+/* ---------- notation plot ---------- */
+let gExp=2;
+const f=n=>3*n*n+2*n+33, g=n=>Math.pow(n,gExp);
+function n0For(test){ const N=3000; let last=-1; for(let n=1;n<=N;n++) if(!test(n)) last=n; if(!test(1e6)) return null; return last===N?null:last+1; }
+function renderPlot(){
+  const c1=+$("#cUp").value, c2=+$("#cLo").value; $("#cUpV").textContent=c1; $("#cLoV").textContent=c2;
+  const W=640,H=300,PL=56,PB=34,PT=14,PR=14, NX=20, YM=f(NX)*1.6;
+  const sx=n=>PL+n/NX*(W-PL-PR), sy=y=>H-PB-Math.min(y,YM*1.05)/YM*(H-PB-PT);
+  const path=fn=>{let d=""; for(let i=0;i<=200;i++){const n=i/200*NX; d+=(i?"L":"M")+sx(n).toFixed(1)+","+sy(fn(n)).toFixed(1);} return d;};
+  let s=`<clipPath id="pc"><rect x="${PL}" y="${PT}" width="${W-PL-PR}" height="${H-PB-PT}"/></clipPath>`;
+  for(let k=0;k<=4;k++){ const y=YM*k/4; s+=`<line class="gridl" x1="${PL}" x2="${W-PR}" y1="${sy(y)}" y2="${sy(y)}"/><text class="lbl" x="${PL-6}" y="${sy(y)+4}" text-anchor="end">${Math.round(y)}</text>`; }
+  for(let n=0;n<=NX;n+=5) s+=`<text class="lbl" x="${sx(n)}" y="${H-PB+16}" text-anchor="middle">${n}</text>`;
+  s+=`<text class="lbl big" x="${W-PR}" y="${H-4}" text-anchor="end">n</text>`;
+  s+=`<line class="axis" x1="${PL}" x2="${W-PR}" y1="${H-PB}" y2="${H-PB}"/><line class="axis" x1="${PL}" x2="${PL}" y1="${PT}" y2="${H-PB}"/>`;
+  const up=n0For(n=>c1*g(n)>=f(n)), lo=n0For(n=>c2*g(n)<=f(n));
+  const gs=["","n","n²","n³"][gExp];
+  if(up&&up<=NX) s+=`<line class="edge hot" stroke-dasharray="3 4" x1="${sx(up)}" x2="${sx(up)}" y1="${PT}" y2="${H-PB}"/><text class="lbl o" x="${sx(up)+4}" y="${PT+12}">n₀=${up}</text>`;
+  if(lo&&lo<=NX&&lo>1) s+=`<line class="edge ok" stroke-dasharray="3 4" x1="${sx(lo)}" x2="${sx(lo)}" y1="${PT}" y2="${H-PB}"/><text class="lbl om" x="${sx(lo)+4}" y="${PT+26}">n₀=${lo}</text>`;
+  s+=`<g clip-path="url(#pc)"><path class="curve-om" d="${path(n=>c2*g(n))}"/><path class="curve-o" d="${path(n=>c1*g(n))}"/><path class="curve-f" d="${path(f)}"/></g>`;
+  s+=`<g transform="translate(${PL+10},${PT+8})"><rect width="190" height="58" rx="6" fill="var(--card)" stroke="var(--line)"/><line class="curve-f" x1="10" x2="30" y1="14" y2="14"/><text class="lbl big" x="36" y="18">f(n) = 3n²+2n+33</text><line class="curve-o" x1="10" x2="30" y1="30" y2="30"/><text class="lbl o" x="36" y="34">${c1}·${gs}  (upper)</text><line class="curve-om" x1="10" x2="30" y1="46" y2="46"/><text class="lbl om" x="36" y="50">${c2}·${gs}  (lower)</text></g>`;
+  $("#plot").innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="growth plot">${s}</svg>`;
+  const trueUp=gExp>=2, trueLo=gExp<=2; let v="";
+  if(up) v+=`<div style="border-color:var(--O)">${chip("O",`f ∈ O(${gs})`)} &nbsp;${c1}·${gs} ≥ f(n) for every n ≥ ${up}. Witnesses: c = ${c1}, n₀ = ${up}.</div>`;
+  else v+=`<div>${chip("none","upper fails")} &nbsp;${c1}·${gs} never stays above f(n). ${trueUp?`This c is too small. Try a bigger c₁: f ∈ O(${gs}) is still true.`:`No c can fix this: f has an n² term, which outgrows any c·n. So f ∉ O(n).`}</div>`;
+  if(lo) v+=`<div style="border-color:var(--Om)">${chip("Om",`f ∈ Ω(${gs})`)} &nbsp;${c2}·${gs} ≤ f(n) for every n ≥ ${lo}. Witnesses: c = ${c2}, n₀ = ${lo}.</div>`;
+  else v+=`<div>${chip("none","lower fails")} &nbsp;${c2}·${gs} eventually passes f(n). ${trueLo?`This c is too big. Try a smaller c₂: f ∈ Ω(${gs}) is still true.`:`No c > 0 can fix this: n³ outgrows 3n². So f ∉ Ω(n³).`}</div>`;
+  v+= up&&lo ? `<div style="border-color:var(--Th);background:var(--Thbg)">${chip("Th",`f ∈ Θ(${gs})`)} &nbsp;Both bounds hold with the same g, so the bound is tight.</div>` : `<div class="muted">Θ(${gs}) needs both bounds at once. ${trueUp&&trueLo?"Adjust the constants to see it hold.":`It is ${trueUp?"an upper bound only":"a lower bound only"} for this g.`}</div>`;
+  $("#plotVerdict").innerHTML=v;
+}
+$$("#gSeg button").forEach(b=>b.onclick=()=>{ gExp=+b.dataset.g; $$("#gSeg button").forEach(x=>x.setAttribute("aria-pressed",x===b)); renderPlot(); });
+$("#cUp").addEventListener("input",renderPlot); $("#cLo").addEventListener("input",renderPlot);
+
+const CHEAT=[
+ ["Array: access A[k]","Ω(1)","O(1)","Θ(1)"],["Array: insert/remove at front","Ω(n)","O(n)","Θ(n)"],["Array: push_back (spare capacity)","Ω(1)","O(1)","Θ(1)"],
+ ["Array / list: linear search","Ω(1)","O(n)","none"],["SLL: insert at head","Ω(1)","O(1)","Θ(1)"],["SLL: delete last (only head)","Ω(n)","O(n)","Θ(n)"],
+ ["DLL: delete given node","Ω(1)","O(1)","Θ(1)"],["Stack push / pop","Ω(1)","O(1)","Θ(1)"],["Queue enqueue / dequeue (circular)","Ω(1)","O(1)","Θ(1)"],
+ ["BST search / insert (unbalanced)","Ω(1)","O(n)","none"],["AVL search","Ω(1)","O(log n)","none"],["AVL insert","Ω(log n)","O(log n)","Θ(log n)"],
+ ["Tree traversal (pre / in / post / level)","Ω(n)","O(n)","Θ(n)"],["Height of a tree","Ω(n)","O(n)","Θ(n)"]];
+$("#cheat").innerHTML=CHEAT.map(r=>`<tr><td class="op">${r[0]}</td><td>${chip("Om",r[1])}</td><td>${chip("O",r[2])}</td><td>${r[3]==="none"?chip("none","none"):chip("Th",r[3])}</td></tr>`).join("");
+
+/* ---------- practice ---------- */
+const PA=[
+ {f:"3n² + 2n + 33",s:[["O(n²)",1,"Leading term n²; c = 4 works from n = 7."],["O(n³)",1,"Loose but true: n³ is above n² eventually."],["Ω(n³)",0,"n³ outgrows 3n², so no c > 0 keeps c·n³ underneath."],["Θ(n²)",1,"Both O(n²) and Ω(n²) hold."]]},
+ {f:"5n + 2",s:[["Θ(n)",1,"Slide 39: 5n + 2 ∈ O(n), and it is also ≥ 5n."],["O(n²)",1,"Slide 43: a looser upper bound is still true."],["Ω(n²)",0,"Linear can never stay above c·n²."],["Ω(1)",1,"Any growing function is at least a constant."]]},
+ {f:"12n² − 10",s:[["O(n)",0,"n² outgrows c·n for any c."],["Ω(n)",1,"12n² − 10 ≥ n once n ≥ 1."],["Θ(n²)",1,"Slide 40: 12n² − 10 ∈ O(n²), and ≥ 11n² for n ≥ 4."],["Θ(n³)",0,"Θ needs the lower bound too; 12n² is not ≥ c·n³."]]},
+ {f:"2ⁿ − 5n + 5",s:[["O(n²)",0,"Exponential beats every polynomial."],["Ω(n²)",1,"2ⁿ is above n² from n = 5 onwards."],["Θ(2ⁿ)",1,"The −5n + 5 part is lower order."],["O(3ⁿ)",1,"3ⁿ grows faster than 2ⁿ, so it is a valid (loose) upper bound."]]},
+ {f:"log₂ n + 7",s:[["Θ(log n)",1,"The +7 is a constant, dropped."],["O(1)",0,"log n keeps growing; no constant caps it."],["O(n)",1,"log n ≤ n, so this is a loose upper bound."],["Ω(n)",0,"log n grows slower than n."]]},
+ {f:"n log n + 100n",s:[["Θ(n log n)",1,"n log n overtakes 100n once log n > 100, so it is the leading term."],["Θ(n)",0,"n log n grows faster than any c·n."],["Ω(n)",1,"It is at least 100n."],["O(n²)",1,"log n ≤ n, so n log n ≤ n²."]]}
+];
+const OPTS=["1","log n","n","n log n","n²","2ⁿ"];
+const PB=[
+ {c:"for (int i = 0; i < n; i++)\n    for (int j = 0; j < n; j++)\n        sum += i * j;",a:["n²","n²","n²"],why:"n × n iterations for every input. Slide 47."},
+ {c:"int i = n;\nwhile (i > 0)\n    i = i / 2;",a:["log n","log n","log n"],why:"i halves each time: about log₂ n iterations. Slide 49."},
+ {c:"for (int i = 0; i < n; i++)\n    if (arr[i] == key) return i;\nreturn -1;",a:["1","n","none"],why:"Best: key at index 0, one comparison. Worst: key last or missing, n comparisons."},
+ {c:"for (int i = 0; i < n; i++)\n    for (int j = 0; j < i; j++)\n        cout << i + j;",a:["n²","n²","n²"],why:"0 + 1 + … + (n−1) = n(n−1)/2, which is Θ(n²) even though the inner loop is shorter."},
+ {c:"for (int i = 0; i < n; i++)\n    for (int j = 1; j < n; j *= 2)\n        cout << j;",a:["n log n","n log n","n log n"],why:"Outer n times, inner doubles j: log n. Multiply: n log n."},
+ {c:"for (int i = 1; i < n; i *= 2)\n    for (int j = 0; j < i; j++)\n        cout << j;",a:["n","n","n"],why:"Trap! Inner runs 1 + 2 + 4 + … < 2n in total, so Θ(n), not n log n."},
+ {c:"for (int i = 0; i < n; i++)\n    for (int j = 0; j < 100; j++)\n        cout << i;",a:["n","n","n"],why:"Inner bound is a constant (like Lab Quiz Q12): 100n → Θ(n)."},
+ {c:"// count nodes in a singly linked list\nNode* t = head; int c = 0;\nwhile (t) { c++; t = t->next; }",a:["n","n","n"],why:"Must reach the end every time: exactly n steps."},
+ {c:"// delete last node, only head given\nNode* t = head;\nwhile (t->next->next) t = t->next;\ndelete t->next; t->next = nullptr;",a:["n","n","n"],why:"Always walks to the second-to-last node: n−2 steps for every list (Lab 4, Task 4a)."},
+ {c:"// doubly linked list: delete node cur\ncur->prev->next = cur->next;\ncur->next->prev = cur->prev;\ndelete cur;",a:["1","1","1"],why:"A fixed number of pointer updates, no loop."},
+ {c:"// insert x into a sorted array (spare capacity)\nint i = size - 1;\nwhile (i >= 0 && A[i] > x) { A[i+1] = A[i]; i--; }\nA[i+1] = x; size++;",a:["1","n","none"],why:"Best: x is largest, no shifts. Worst: x is smallest, all n shift."},
+ {c:"// search in a plain (unbalanced) BST\nwhile (cur && cur->val != key)\n    cur = key < cur->val ? cur->left : cur->right;",a:["1","n","none"],why:"Best: key at the root. Worst: a skewed tree (inserted in sorted order) is a chain of n nodes."},
+ {c:"// search in an AVL tree\nwhile (cur && cur->val != key)\n    cur = key < cur->val ? cur->left : cur->right;",a:["1","log n","none"],why:"Same code, but AVL height ≤ about 1.44 log₂ n, so the worst case drops to log n. Best is still the root."},
+ {c:"// AVL insert: walk down, insert at leaf,\n// walk back up updating heights, rotate once if needed",a:["log n","log n","log n"],why:"New keys always go to a leaf, so you always walk the full height (log n) down and back up."},
+ {c:"void preorder(Node* r) {\n    if (!r) return;\n    cout << r->val;\n    for (Node* c : r->children) preorder(c);\n}",a:["n","n","n"],why:"Every node printed once, always."},
+ {c:"// bubble sort with early exit\nfor (int i = 0; i < n-1; i++) {\n    bool swapped = false;\n    for (int j = 0; j < n-1-i; j++)\n        if (A[j] > A[j+1]) { swap(A[j], A[j+1]); swapped = true; }\n    if (!swapped) break;\n}",a:["n","n²","none"],why:"Already sorted: one pass of n−1 comparisons then break. Reversed: full n(n−1)/2."},
+ {c:"if (n % 2 == 0)\n    for (int i = 0; i < n; i++) cout << i;\nelse\n    return;",a:["1","n","none"],why:"Odd n returns immediately; even n loops n times."},
+ {c:"// array-based stack push (capacity available)\narr[++top] = x;",a:["1","1","1"],why:"One increment, one write."}
+];
+let st={a:{},b:{}};
+function updScore(){
+  let n=0,d=0; Object.values(st.a).forEach(v=>{d++; if(v)n++;}); Object.values(st.b).forEach(v=>{d++; if(v)n++;});
+  $("#scoreN").textContent=n; $("#scoreD").textContent=d;
+}
+function renderPractice(){
+  st={a:{},b:{}}; updScore();
+  $("#partA").innerHTML=PA.map((p,i)=>`<div style="display:grid;gap:8px"><div class="mono" style="font-weight:600">f(n) = ${p.f}</div>${p.s.map((s,j)=>`<div class="stmt" id="pa-${i}-${j}"><span class="s">f ∈ ${s[0]}</span><span class="tf"><button class="btn" data-v="1">True</button><button class="btn" data-v="0">False</button></span><span class="fb" hidden></span></div>`).join("")}</div>`).join("");
+  $$("#partA .stmt").forEach(el=>{ const [,i,j]=el.id.split("-"), s=PA[i].s[j];
+    $$("button",el).forEach(b=>b.onclick=()=>{ const ok=(+b.dataset.v)===s[1]; st.a[el.id]=ok; el.classList.toggle("ok",ok); el.classList.toggle("no",!ok);
+      const fb=$(".fb",el); fb.hidden=false; fb.innerHTML=`<b style="color:var(${ok?"--good":"--bad"})">${ok?"Correct":"Not quite"}</b>: it is <b>${s[1]?"true":"false"}</b>. ${s[2]}`; updScore(); }); });
+  const sel=(id,cls,lab,extra)=>`<label class="${cls}" for="${id}">${lab}<select id="${id}"><option value="">choose…</option>${OPTS.map(o=>`<option>${o}</option>`).join("")}${extra?`<option value="none">none (best ≠ worst)</option>`:""}</select></label>`;
+  $("#partB").innerHTML=PB.map((p,i)=>`<div class="card" style="padding:14px;gap:10px" id="pb-${i}"><pre class="code">${esc(p.c)}</pre><div class="selrow">${sel(`pb-${i}-om`,"Om","Best case Ω")}${sel(`pb-${i}-o`,"O","Worst case O")}${sel(`pb-${i}-th`,"Th","Θ for all inputs",1)}</div><div class="row"><button class="btn primary">Check</button><span class="fb small" hidden></span></div></div>`).join("");
+  PB.forEach((p,i)=>{ const box=$("#pb-"+i);
+    $("button",box).onclick=()=>{ const ids=["om","o","th"]; let all=true;
+      ids.forEach((k,j)=>{ const s=$(`#pb-${i}-${k}`), ok=s.value===p.a[j]; all=all&&ok; s.classList.toggle("ok",ok); s.classList.toggle("no",!ok); });
+      st.b[i]=all; const fb=$(".fb",box); fb.hidden=false;
+      fb.innerHTML=`<b style="color:var(${all?"--good":"--bad"})">${all?"All three right.":"Answer:"}</b> Ω(${p.a[0]}), O(${p.a[1]}), ${p.a[2]==="none"?"no single Θ":"Θ("+p.a[2]+")"}. ${p.why}`; updScore(); }; });
+}
+$("#resetPractice").onclick=renderPractice;
+
+/* ---------- boot ---------- */
+renderArrTable(); renderArrDetail(); renderK(); renderLQ(); renderPlot(); renderPractice();
+show(location.hash.slice(1));
+})();
+</script>
+
+</body></html>
